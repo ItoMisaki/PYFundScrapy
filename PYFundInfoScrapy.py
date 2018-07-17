@@ -65,8 +65,12 @@ def insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype):
             for row in rs:
                 if (tfundname != str(row[2])) or (tfundtype != str(row[3])):
                     PYDBConnect.mysqldbInsertDeleteUpdate(conn, updatecmd)
+                    print("Update TFUNDINFO for fundcode = " + tfundcode)
+                else:
+                    print("TFUNDINFO exist fundcode =" + tfundcode)
         else:
             PYDBConnect.mysqldbInsertDeleteUpdate(conn, insertcmd)
+            print("Insert TFUNDINFO for fundcode = " + tfundcode)
     except Exception as e:
         print("insertORupdate_tfundinfo：{0}".format(str(e)))
     finally:
@@ -82,3 +86,4 @@ if __name__ == "__main__":
             tfundname = tfundname_type.split(',')[0]
             tfundtype = tfundname_type.split(',')[1]
             insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype)
+    print("Update TFUNDINFO Done!")

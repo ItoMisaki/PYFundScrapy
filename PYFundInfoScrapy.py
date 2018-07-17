@@ -55,9 +55,9 @@ def insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype):
                                       PYDBConnect.pydbname,
                                       PYDBConnect.pydbhost,
                                       PYDBConnect.pydbport)
-    querycmd = ' select * from TFUNDINFO where c_fundcode = ' + tfundcode ;
-    updatecmd = 'update table TFUNDINFO set c_fundname = ' + tfundname +' , c_fundtype = ' + tfundtype + ' where c_fundcode = ' + tfundcode
-    insertcmd = 'insert into table TFUNDINFO (c_fundcode, c_fundname, c_fundtype) values (' + tfundcode +  ', ' + tfundname + ', ' +tfundtype +')'
+    querycmd = " select * from TFUNDINFO where c_fundcode = '" + tfundcode + "'"
+    updatecmd = "update TFUNDINFO set c_fundname = '" + tfundname + "' , c_fundtype = '" + tfundtype + "' where c_fundcode = '" + tfundcode +"'"
+    insertcmd = "insert into TFUNDINFO (c_fundcode, c_fundname, c_fundtype) values ('" + tfundcode +  "', '" + tfundname + "', '" + tfundtype + "')"
 
     try:
         rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)

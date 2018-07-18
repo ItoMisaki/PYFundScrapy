@@ -1,11 +1,11 @@
 import pymysql
 
 ''
-pydbhost = 'a.b.c.d'
-pydbport = 1234
-pydbusername = 'abcd'
-pydbpassword = 'abcd1234'
-pydbname = 'db1'
+pydbhost = '47.75.122.216'
+pydbport = 8826
+pydbusername = 'root'
+pydbpassword = 'MYSQL@123.com'
+pydbname = 'MYSQLDB1'
 
 '''
     mysql的连接函数
@@ -25,6 +25,8 @@ def mysqldbConnect(username, passwd, db, host, dbport, charset='utf8'):
     mysql的查询语句执行
 '''
 def mysqldbQuery(conn, sqlcmd):
+    rowcount = 0
+    rs = {}
     cursor = conn.cursor()
     try:
         cursor.execute(sqlcmd)
@@ -65,7 +67,7 @@ def mysqldbConnClose(conn):
 if __name__ == "__main__":
 
     connetion = mysqldbConnect(pydbusername, pydbpassword, pydbname, pydbhost, pydbport)
-    sqlcmd = "select * from TFUNDINFO"
+    sqlcmd = "select * from TFUNDINFO where C_FUNDCODE =000001"
 
     try:
         rowcount, rs = mysqldbQuery(connetion, sqlcmd)

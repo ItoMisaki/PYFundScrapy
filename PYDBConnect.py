@@ -1,11 +1,11 @@
 import pymysql
 
 ''
-pydbhost = '47.75.122.216'
-pydbport = 8826
-pydbusername = 'root'
-pydbpassword = 'MYSQL@123.com'
-pydbname = 'MYSQLDB1'
+pydbhost = 'a.b.c.d'
+pydbport = 1234
+pydbusername = 'abcd'
+pydbpassword = '1234'
+pydbname = 'abcd'
 
 '''
     mysql的连接函数

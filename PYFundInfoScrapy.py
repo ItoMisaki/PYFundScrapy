@@ -179,7 +179,7 @@ if __name__ == "__main__":
             tfundname = tfundname_type.split(',')[0]
             tfundtype = tfundname_type.split(',')[1]
             insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype)
-    print("Update TFUNDINFO with fundcode Done!")
+    print("Update TFUNDINFO with fundcode, fundname, fundtype Done!")
 
 
     #更新TFUNDINFO基金管理人与成立日期为空的记录
@@ -194,4 +194,4 @@ if __name__ == "__main__":
             updateFundCompanyAndSetupDate(ofundcode, ofundcompany, ofundsetup_date)
             time.sleep(5)
 
-    print("Update TFUNDINFO with fundcompany and setup_date Done!")
+    print("Update TFUNDINFO with fundcompany, setupdate Done!")

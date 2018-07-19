@@ -148,7 +148,7 @@ def updateFundCompanyAndSetupDate(fundcode, fundcomany, spdate):
 
     try:
         PYDBConnect.mysqldbInsertDeleteUpdate(conn, updatecmd)
-        print("Update TFUNDINFO for Fundcode = " + fundcode)
+        print(time.strftime("%Y-%m-%d %H:%M:%S" + ": Update TFUNDINFO for Fundcode = " + fundcode)
     except Exception as e:
         print("ERROR---updateFundCompanyAndSetupDate：{0}".format(str(e)))
     finally:
@@ -181,6 +181,8 @@ def selectNullCompanyAndSPdate():
 
 if __name__ == "__main__":
 
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to scrapy TFUNDINFO...")
+
     #更新基金基本信息：基金代码、基金名称、基金类型等
     fundinfo_dict = get_fundinfolist(target_fundlisturl, target_headers, target_proxy)
 
@@ -189,9 +191,10 @@ if __name__ == "__main__":
             tfundname = tfundname_type.split(',')[0]
             tfundtype = tfundname_type.split(',')[1]
             insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype)
-    print("Update TFUNDINFO with fundcode, fundname, fundtype Done!")
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDINFO with fundcode, fundname, fundtype Done!")
 
 
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to fill TFUNDINFO with fundcompany, setupdate ...")
     #更新TFUNDINFO基金管理人与成立日期为空的记录
     rownum, resCol = selectNullCompanyAndSPdate()
     if (rownum > 0):
@@ -204,4 +207,4 @@ if __name__ == "__main__":
             updateFundCompanyAndSetupDate(ofundcode, ofundcompany, ofundsetup_date)
             time.sleep(1)
 
-    print("Update TFUNDINFO with fundcompany, setupdate Done!")
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDINFO with fundcompany, setupdate Done!")

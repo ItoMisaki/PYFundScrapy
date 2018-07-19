@@ -107,19 +107,28 @@ def get_fundbasicinfo(url, headers, proxy, tfundcode):
         bs_fundcompany = bs_fundinfo.find('a', href=re.compile('(http://fund.eastmoney.com/company/).*\.html'))
         tfundcompany = bs_fundcompany.text
 
-        bs_fundmanager = bs_fundinfo.find('a', href=re.compile('(http://fund.eastmoney.com/manager/).*\.html'))
-        tfundmanager = bs_fundmanager.text
+        bs_fundmanagers = bs_fundinfo.find_all('a', href=re.compile('(http://fund.eastmoney.com/manager/).*\.html'))
+        for bs_fundmanager in bs_fundmanagers:
+            tfundmanager += (bs_fundmanager.text+"|")
 
         bs_fundassetrepdate = bs_fundinfo.find('th', text='资产规模').nextSibling
-
         tfundassetrepdate = str(bs_fundassetrepdate.text).split('份额规模')[0].strip()
-        tfundasset = str(tfundassetrepdate).split('亿元（截止至：')[0]
-        tfundreport_date = str(tfundassetrepdate).split('亿元（截止至：')[1].strip('日）').replace('年', '-').replace('月', '-')
+        if(len(str(tfundassetrepdate).split('亿元（截止至：'))>1):
+            tfundasset = str(tfundassetrepdate).split('亿元（截止至：')[0]
+            tfundreport_date = str(tfundassetrepdate).split('亿元（截止至：')[1].strip('日）').replace('年', '-').replace('月', '-')
+        else:
+            tfundasset = '0.00'
+            tfundreport_date = '0001-01-01'
 
 
         bs_setupdate = bs_fundinfo.find('th', text='成立日期/规模').nextSibling
-        tfundsetup_date = str(bs_setupdate.text).split(' / ')[0].strip('日').replace('年', '-').replace('月', '-')
+        if(len(str(bs_setupdate.text).split(' / '))>1):
+            tfundsetup_date = str(bs_setupdate.text).split(' / ')[0].strip('日').replace('年', '-').replace('月', '-')
+        else:
+            tfundsetup_date = '0001-01-01'
 
+        if tfundsetup_date == '':
+            tfundsetup_date = '0001-01-01'
 
     return tfundcompany, tfundmanager, tfundasset, tfundreport_date, tfundsetup_date
 
@@ -139,6 +148,7 @@ def updateFundCompanyAndSetupDate(fundcode, fundcomany, spdate):
 
     try:
         PYDBConnect.mysqldbInsertDeleteUpdate(conn, updatecmd)
+        print("Update TFUNDINFO for Fundcode = " + fundcode)
     except Exception as e:
         print("ERROR---updateFundCompanyAndSetupDate：{0}".format(str(e)))
     finally:
@@ -192,6 +202,6 @@ if __name__ == "__main__":
                                                                                                   target_proxy,
                                                                                                   ofundcode)
             updateFundCompanyAndSetupDate(ofundcode, ofundcompany, ofundsetup_date)
-            time.sleep(5)
+            time.sleep(1)
 
     print("Update TFUNDINFO with fundcompany, setupdate Done!")

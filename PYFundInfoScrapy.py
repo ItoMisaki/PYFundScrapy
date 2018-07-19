@@ -18,7 +18,6 @@ target_basicinfourl = 'http://fund.eastmoney.com/f10/'
 target_fundlisturl = 'http://fund.eastmoney.com/js/fundcode_search.js'
 
 
-
 '''
     访问URL，获取报文，并将报文按照基金进行分组，返回基金信息的数组类型
 '''
@@ -61,7 +60,7 @@ def insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype):
                                       PYDBConnect.pydbport)
     querycmd = " select * from TFUNDINFO where c_fundcode = '" + tfundcode + "'"
     updatecmd = "update TFUNDINFO set c_fundname = '" + tfundname + "' , c_fundtype = '" + tfundtype + "' where c_fundcode = '" + tfundcode +"'"
-    insertcmd = "insert into TFUNDINFO (c_fundcode, c_fundname, c_fundtype) values ('" + tfundcode +  "', '" + tfundname + "', '" + tfundtype + "')"
+    insertcmd = "insert into TFUNDINFO (c_fundcode, c_fundname, c_fundtype) values ('" + tfundcode + "', '" + tfundname + "', '" + tfundtype + "')"
 
     try:
         rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)
@@ -77,6 +76,56 @@ def insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype):
         print("ERROR---insertORupdate_tfundinfo：{0}".format(str(e)))
     finally:
         PYDBConnect.mysqldbConnClose(conn)
+
+
+'''
+    插入数据库中的基金报告表（插入或更新）
+'''
+def insert_tfundreport(tfundcode, treportdate, tfundmanager, tfundasset):
+    conn = PYDBConnect.mysqldbConnect(PYDBConnect.pydbusername,
+                                      PYDBConnect.pydbpassword,
+                                      PYDBConnect.pydbname,
+                                      PYDBConnect.pydbhost,
+                                      PYDBConnect.pydbport)
+
+    querycmd = "select * from TFUNDREPORT where c_fundcode = '" + tfundcode + "'" + " and d_reportdate = '" + treportdate +"'"
+    insertcmd = "insert into TFUNDREPORT (c_fundcode, d_reportdate, c_fundmanager, c_fundasset) \
+                                  values ('" + tfundcode + "', '" + treportdate + "', '" + tfundmanager + "', '" + tfundasset + "')"
+
+    try:
+        rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)
+        if(rowcount == 0):
+            PYDBConnect.mysqldbInsertDeleteUpdate(conn, insertcmd)
+            print("Insert TFUNDREPORT for fundcode = " + tfundcode + ", reportdate = " + treportdate)
+    except Exception as e:
+        print("ERROR---insert_tfundreport: {0}".format(str(e)))
+    finally:
+        PYDBConnect.mysqldbConnClose(conn)
+
+
+'''
+    获取所有基金的基金代码
+'''
+def selectAllFundcode():
+    rowcount = 0
+    rs = {}
+
+
+    conn = PYDBConnect.mysqldbConnect(PYDBConnect.pydbusername,
+                                      PYDBConnect.pydbpassword,
+                                      PYDBConnect.pydbname,
+                                      PYDBConnect.pydbhost,
+                                      PYDBConnect.pydbport)
+    querycmd = "select c_fundcode from TFUNDINFO"
+
+    try:
+        rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)
+    except Exception as e:
+        print("ERROR---selectAllFundcode：{0}".format(str(e)))
+    finally:
+        PYDBConnect.mysqldbConnClose(conn)
+
+    return rowcount, rs
 
 
 '''
@@ -148,7 +197,6 @@ def updateFundCompanyAndSetupDate(fundcode, fundcomany, spdate):
 
     try:
         PYDBConnect.mysqldbInsertDeleteUpdate(conn, updatecmd)
-        print(time.strftime("%Y-%m-%d %H:%M:%S" + ": Update TFUNDINFO for Fundcode = " + fundcode)
     except Exception as e:
         print("ERROR---updateFundCompanyAndSetupDate：{0}".format(str(e)))
     finally:
@@ -169,7 +217,7 @@ def selectNullCompanyAndSPdate():
                                       PYDBConnect.pydbhost,
                                       PYDBConnect.pydbport)
 
-    querycmd = 'select C_FUNDCODE from TFUNDINFO where C_FUNDCOMPANY is null and D_SETPUPDATE is null'
+    querycmd = "select C_FUNDCODE from TFUNDINFO where C_FUNDCOMPANY is null or D_SETPUPDATE = '00001-01-01'"
     try:
         rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)
     except Exception as e:
@@ -182,7 +230,6 @@ def selectNullCompanyAndSPdate():
 if __name__ == "__main__":
 
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to scrapy TFUNDINFO...")
-
     #更新基金基本信息：基金代码、基金名称、基金类型等
     fundinfo_dict = get_fundinfolist(target_fundlisturl, target_headers, target_proxy)
 
@@ -192,6 +239,7 @@ if __name__ == "__main__":
             tfundtype = tfundname_type.split(',')[1]
             insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDINFO with fundcode, fundname, fundtype Done!")
+
 
 
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to fill TFUNDINFO with fundcompany, setupdate ...")
@@ -205,6 +253,21 @@ if __name__ == "__main__":
                                                                                                   target_proxy,
                                                                                                   ofundcode)
             updateFundCompanyAndSetupDate(ofundcode, ofundcompany, ofundsetup_date)
-            time.sleep(1)
-
+            time.sleep(2)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDINFO with fundcompany, setupdate Done!")
+
+
+
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to scrapy TFUNDREPORT...")
+    #更新基金报告表：基金代码、基金报告期、基金经理、基金规模
+    row_num, res_Col = selectAllFundcode()
+    if (row_num >0):
+        for res in res_Col:
+            o_fundcode = str(res[0])
+            o_fundcompany, o_fundmanager, o_fundasset, o_fundreportdate, o_fundsetupdate = get_fundbasicinfo(target_basicinfourl,
+                                                                                                          target_headers,
+                                                                                                          target_proxy,
+                                                                                                          o_fundcode)
+            insert_tfundreport(o_fundcode, o_fundreportdate, o_fundmanager, o_fundasset)
+            time.sleep(2)
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDREPORT Done!")

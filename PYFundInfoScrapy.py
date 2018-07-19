@@ -11,7 +11,7 @@ target_headers = [('Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) App
                   ('Connection', 'keep-alive'),
                   ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
                   ('Accept-Language', 'Accept-Language')]
-target_proxy = {'https': '123.139.56.238:999'}
+target_proxy = {'https': '1115.198.37.85:6666'}
 
 
 target_basicinfourl = 'http://fund.eastmoney.com/f10/'
@@ -193,7 +193,7 @@ def updateFundCompanyAndSetupDate(fundcode, fundcomany, spdate):
                                       PYDBConnect.pydbhost,
                                       PYDBConnect.pydbport)
 
-    updatecmd = "update TFUNDINFO set C_FUNDCOMPANY = '" + fundcomany + "' , D_SETPUPDATE = '" + spdate + "' where c_fundcode = '" + fundcode + "'"
+    updatecmd = "update TFUNDINFO set C_FUNDCOMPANY = '" + fundcomany + "', D_SETPUPDATE = '" + spdate + "' where c_fundcode = '" + fundcode + "'"
 
     try:
         PYDBConnect.mysqldbInsertDeleteUpdate(conn, updatecmd)
@@ -217,7 +217,7 @@ def selectNullCompanyAndSPdate():
                                       PYDBConnect.pydbhost,
                                       PYDBConnect.pydbport)
 
-    querycmd = "select C_FUNDCODE from TFUNDINFO where C_FUNDCOMPANY is null or D_SETPUPDATE = '00001-01-01'"
+    querycmd = "select C_FUNDCODE from TFUNDINFO where C_FUNDCOMPANY is null or D_SETPUPDATE is null"
     try:
         rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)
     except Exception as e:
@@ -242,7 +242,7 @@ if __name__ == "__main__":
 
 
 
-    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to fill TFUNDINFO with fundcompany, setupdate ...")
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "：Start to fill TFUNDINFO with fundcompany, setupdate ...")
     #更新TFUNDINFO基金管理人与成立日期为空的记录
     rownum, resCol = selectNullCompanyAndSPdate()
     if (rownum > 0):
@@ -253,7 +253,7 @@ if __name__ == "__main__":
                                                                                                   target_proxy,
                                                                                                   ofundcode)
             updateFundCompanyAndSetupDate(ofundcode, ofundcompany, ofundsetup_date)
-            time.sleep(2)
+            time.sleep(1)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDINFO with fundcompany, setupdate Done!")
 
 
@@ -269,5 +269,5 @@ if __name__ == "__main__":
                                                                                                           target_proxy,
                                                                                                           o_fundcode)
             insert_tfundreport(o_fundcode, o_fundreportdate, o_fundmanager, o_fundasset)
-            time.sleep(2)
+            time.sleep(1)
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDREPORT Done!")

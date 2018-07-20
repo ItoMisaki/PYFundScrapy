@@ -114,26 +114,30 @@ def get_fundbasicinfo(url, headers, proxy, tfundcode):
     bs_fundinfo = BeautifulSoup(str(tfundinfo), 'html.parser')
 
     bs_fundcompany = bs_fundinfo.find('a', href=re.compile('(http://fund.eastmoney.com/company/).*\.html'))
-    tfundcompany = bs_fundcompany.text
+    if bs_fundcompany:
+        tfundcompany = bs_fundcompany.text
 
     bs_fundmanagers = bs_fundinfo.find_all('a', href=re.compile('(http://fund.eastmoney.com/manager/).*\.html'))
-    for bs_fundmanager in bs_fundmanagers:
-        tfundmanager += (bs_fundmanager.text + "|")
+    if len(bs_fundmanagers) >0:
+        for bs_fundmanager in bs_fundmanagers:
+            tfundmanager += (bs_fundmanager.text + "|")
 
     bs_fundassetrepdate = bs_fundinfo.find('th', text='资产规模').nextSibling
-    tfundassetrepdate = str(bs_fundassetrepdate.text).split('份额规模')[0].strip()
-    if (len(str(tfundassetrepdate).split('亿元（截止至：')) > 1):
-        tfundasset = str(tfundassetrepdate).split('亿元（截止至：')[0]
-        tfundreport_date = str(tfundassetrepdate).split('亿元（截止至：')[1].strip('日）').replace('年', '-').replace('月', '-')
-    else:
-        tfundasset = '0.00'
-        tfundreport_date = '0001-01-01'
+    if bs_fundassetrepdate:
+        tfundassetrepdate = str(bs_fundassetrepdate.text).split('份额规模')[0].strip()
+        if (len(str(tfundassetrepdate).split('亿元（截止至：')) > 1):
+            tfundasset = str(tfundassetrepdate).split('亿元（截止至：')[0]
+            tfundreport_date = str(tfundassetrepdate).split('亿元（截止至：')[1].strip('日）').replace('年', '-').replace('月', '-')
+        else:
+            tfundasset = '0.00'
+            tfundreport_date = '0001-01-01'
 
     bs_setupdate = bs_fundinfo.find('th', text='成立日期/规模').nextSibling
-    if (len(str(bs_setupdate.text).split(' / ')) > 1):
-        tfundsetup_date = str(bs_setupdate.text).split(' / ')[0].strip('日').replace('年', '-').replace('月', '-')
-    else:
-        tfundsetup_date = '0001-01-01'
+    if bs_setupdate:
+        if (len(str(bs_setupdate.text).split(' / ')) > 1):
+            tfundsetup_date = str(bs_setupdate.text).split(' / ')[0].strip('日').replace('年', '-').replace('月', '-')
+        else:
+            tfundsetup_date = '0001-01-01'
 
     if tfundsetup_date == '':
         tfundsetup_date = '0001-01-01'

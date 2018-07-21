@@ -1,29 +1,38 @@
 import pymysql
 
-''
 pydbhost = '47.75.122.216'
-pydbport = 8806
+pydbport = 8826
 pydbusername = 'root'
 pydbpassword = 'MYSQL@123.com'
 pydbname = 'MYSQLDB1'
+pydbcharset = 'utf8'
 
 '''
     mysql的连接函数
 '''
-def mysqldbConnect(username, passwd, db, host, dbport, charset='utf8'):
-    conn = pymysql.connect(host=host,
-                           user=username,
-                           password=passwd,
-                           db=db,
-                           charset=charset,
-                           port=dbport)
-    conn.autocommit(False)
+
+
+def mysqldbConnect():
+    conn = None
+    try:
+        conn = pymysql.connect(host=pydbhost,
+                               user=pydbusername,
+                               password=pydbpassword,
+                               db=pydbname,
+                               charset=pydbcharset,
+                               port=pydbport)
+        conn.autocommit(False)
+    except Exception as e:
+        print("Failed to Connect MYSQL DB: " + str(e))
+
     return conn
 
 
 '''
     mysql的查询语句执行
 '''
+
+
 def mysqldbQuery(conn, sqlcmd):
     rowcount = 0
     rs = {}
@@ -33,6 +42,7 @@ def mysqldbQuery(conn, sqlcmd):
         rowcount = cursor.rowcount
         rs = cursor.fetchall()
     except Exception as e:
+        print("Failed to run sql: " + sqlcmd)
         print(str(e))
     finally:
         cursor.close()
@@ -42,15 +52,18 @@ def mysqldbQuery(conn, sqlcmd):
 '''
     mysql的insert, delete, update执行
 '''
+
+
 def mysqldbInsertDeleteUpdate(conn, sqlcmd):
     cursor = conn.cursor()
     try:
         cursor.execute(sqlcmd)
         if (cursor.rowcount != 1):
-            raise Exception("执行SQL语句失败：{0}".format(sqlcmd))
+            raise Exception("Cursor rowcount = {0}".format(rowcount))
         conn.commit()
     except Exception as e:
         conn.rollback()
+        print("Failed to run sql: " + sqlcmd)
         print(str(e))
     finally:
         cursor.close()
@@ -59,14 +72,35 @@ def mysqldbInsertDeleteUpdate(conn, sqlcmd):
 '''
     关闭mysql的连接
 '''
+
+
 def mysqldbConnClose(conn):
     if (conn):
         conn.close()
 
 
+def select_allfundcodes():
+    rowcount = 0
+    rs = {}
+
+    conn = mysqldbConnect()
+    querycmd = "select C_FUNDCODE from TFUNDINFO"
+
+    if conn:
+        try:
+            rowcount, rs = mysqldbQuery(conn, querycmd)
+        except Exception as e:
+            print("Failed to run sql: " + querycmd)
+            print("ERROR---selectAllFundcode：{0}".format(str(e)))
+        finally:
+            mysqldbConnClose(conn)
+
+    return rowcount, rs
+
+
 if __name__ == "__main__":
 
-    connetion = mysqldbConnect(pydbusername, pydbpassword, pydbname, pydbhost, pydbport)
+    connetion = mysqldbConnect()
     sqlcmd = "select * from TFUNDINFO where C_FUNDCODE =000001"
 
     try:

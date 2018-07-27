@@ -82,8 +82,8 @@ def get_fundstockinfo(baseUrl, tfundcode):
 def insert_tfundstock(tfundcode, treportdate, tstockcode, tstockname, tassetration, tstocknum, tstockval):
     conn = PYDBConnect.mysqldbConnect()
 
-    querycmd = "select C_FUNDCODE from TFUNDSTOCK where C_FUNDCODE = '" + tfundcode + "' and D_REPORTDATE = '" + treportdate + "' and C_STAOCKCODE = '" + tstockcode + "'"
-    insertcmd = "insert into TFUNDSTOCK (C_FUNDCODE, D_REPORTDATE, C_STAOCKCODE, C_STOCKNAME, C_ASSETRATION, C_STOCKQUANTITY, C_STOCKVALUE)  \
+    querycmd = "select C_FUNDCODE from TFUNDSTOCK where C_FUNDCODE = '" + tfundcode + "' and D_REPORTDATE = '" + treportdate + "' and C_STOCKCODE = '" + tstockcode + "'"
+    insertcmd = "insert into TFUNDSTOCK (C_FUNDCODE, D_REPORTDATE, C_STOCKCODE, C_STOCKNAME, C_ASSETRATION, C_STOCKQUANTITY, C_STOCKVALUE)  \
                                 values ('" + tfundcode + "', '" + treportdate + "', '" + tstockcode + "', '" + tstockname + "', '" + tassetration + "', '" + tstocknum + "', '" + tstockval + "')"
 
     try:

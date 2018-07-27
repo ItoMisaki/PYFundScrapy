@@ -100,7 +100,7 @@ def insertORupdate_tfundinfo(tfundcode, tfundname, tfundtype):
                 PYDBConnect.mysqldbInsertDeleteUpdate(conn, insertcmd)
                 print("Insert TFUNDINFO for C_FUNDCODE = " + tfundcode)
         except Exception as e:
-            print("ERROR---insertORupdate_tfundinfo：{0} ".format(str(e)))
+            print("ERROR---insertORupdate_tfundinfo: {0} ".format(str(e)))
         finally:
             PYDBConnect.mysqldbConnClose(conn)
 
@@ -121,7 +121,7 @@ def update_fundcompanyAndsetupDate(tfundcode, tfundcomany, spdate):
             print("Update TFUNDINFO for C_FUNDCODE = " + tfundcode + " with " + tfundcomany + " and " + spdate)
         except Exception as e:
             print("Failed to run sql: " + updatecmd)
-            print("ERROR---updateFundCompanyAndSetupDate：{0}".format(str(e)))
+            print("ERROR---updateFundCompanyAndSetupDate: {0}".format(str(e)))
         finally:
             PYDBConnect.mysqldbConnClose(conn)
 
@@ -144,7 +144,7 @@ def select_nullfundcompanyAndsetupDate():
             rowcount, rs = PYDBConnect.mysqldbQuery(conn, querycmd)
         except Exception as e:
             print("Failed to run sql: " + querycmd)
-            print("ERROR---selectNullCompanyAndSPdate：{0}".format(str(e)))
+            print("ERROR---selectNullCompanyAndSPdate: {0}".format(str(e)))
         finally:
             PYDBConnect.mysqldbConnClose(conn)
 
@@ -189,7 +189,7 @@ def clean_tfundinfo():
 
         except Exception as e:
             print("Failed to run sql: " + querycmd)
-            print("ERROR---clean_tfundinfo：{0}".format(str(e)))
+            print("ERROR---clean_tfundinfo: {0}".format(str(e)))
         finally:
             PYDBConnect.mysqldbConnClose(conn)
 
@@ -197,7 +197,7 @@ def clean_tfundinfo():
 if __name__ == "__main__":
 
     # 更新基金基本信息：基金代码、基金名称、基金类型等
-    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "： Start to scrapy TFUNDINFO...")
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Start to scrapy TFUNDINFO...")
     fundinfo_dict = get_fundinfoList(target_fundlistUrl)
 
     if len(fundinfo_dict) > 0:
@@ -221,6 +221,6 @@ if __name__ == "__main__":
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Update TFUNDINFO with fundcompany, setupdate Done!")
 
     # 清洗TFUNDINFO中的无效数据
-    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "：Start to clean data in TFUNDINFO...")
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Start to clean data in TFUNDINFO...")
     clean_tfundinfo()
     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ": Clean data in TFUNDINFO Done!")

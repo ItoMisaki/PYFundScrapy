@@ -109,6 +109,6 @@ if __name__ == "__main__":
             for row in rs:
                 print(row)
     except Exception as e:
-        print("mysqldbQuery报错：{0}".format(str(e)))
+        print("mysqldbQuery报错: {0}".format(str(e)))
     finally:
         mysqldbConnClose(connetion)
